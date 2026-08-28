@@ -1,93 +1,677 @@
-# GOAD
+# 🛡️ Active Directory Security Audit
 
+> **Target Domain:** `proxym.tn`
+> **Audit Date:** 27 August 2026
+> **Auditor:** Aya NASR
+> **Supervisor:** Houda Mabrouk
 
+---
 
-## Getting started
+## 📋 Table of Contents
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+* [Project Information](#-project-information)
+* [Network Architecture](#-network-architecture)
+* [Active Directory Structure](#-active-directory-structure)
+* [Infrastructure](#-infrastructure)
+* [Part 1 — Group Policy Configuration](#-part-1--group-policy-configuration)
+* [Part 2 — BloodHound Analysis](#-part-2--bloodhound-analysis)
+* [Session Analysis](#-session-analysis)
+* [Security Findings](#-security-findings)
+* [Identified Vulnerabilities](#-identified-vulnerabilities)
+* [Remediation Plan](#-remediation-plan)
+* [Conclusion](#-conclusion)
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+---
 
-## Add your files
+# 👤 Project Information
 
-* [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-* [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+| Field              | Details                         |
+| ------------------ | ------------------------------- |
+| **Intern**         | Aya NASR                        |
+| **Supervisor**     | Houda Mabrouk                   |
+| **Project**        | Active Directory Security Audit |
+| **Target Domain**  | `proxym.tn`                     |
+| **Audit Date**     | 27 August 2026                  |
+| **Environment**    | VMware Lab                      |
+| **Audit Platform** | Kali Linux                      |
+| **Main Tools**     | BloodHound CE + SharpHound      |
 
+---
+
+# 🌐 Network Architecture
+
+**Network:** `192.168.36.0/24`
+**Network Type:** VMware NAT
+
+```text
+┌──────────────────────────────────────────────────────────────┐
+│                    ACTIVE DIRECTORY LAB                      │
+│                                                              │
+│  VM 1 — Windows Server 2019                                  │
+│  ├── Hostname: DC01                                          │
+│  ├── IP Address: 192.168.36.10                               │
+│  └── Roles: AD DS + DNS + DHCP                               │
+│                                                              │
+│  VM 2 — Windows 10 Client                                    │
+│  ├── Hostname: DESKTOP-A92LHE9                               │
+│  ├── IP Address: 192.168.36.101                              │
+│  └── Role: Domain Client                                     │
+│                                                              │
+│  VM 3 — Kali Linux                                           │
+│  ├── IP Address: 192.168.36.130                              │
+│  └── Role: Security Audit / BloodHound Analysis              │
+│                                                              │
+└──────────────────────────────────────────────────────────────┘
 ```
-cd existing_repo
-git remote add origin https://gitlab-st.proxym-group.net/houda.mabrouk/goad.git
-git branch -M main
-git push -uf origin main
+
+---
+
+# 🏗️ Active Directory Structure
+
+**Domain:** `proxym.tn`
+
+```text
+proxym.tn
+│
+├── Domain Controllers
+│   └── DC01
+│
+├── Admins
+│   ├── Admin1
+│   └── Admin2
+│
+├── Users
+│   ├── User1
+│   └── User2
+│
+└── Computers
+    └── DESKTOP-A92LHE9
 ```
 
-## Integrate with your tools
+## 👥 Created Accounts
 
-* [Set up project integrations](https://gitlab-st.proxym-group.net/houda.mabrouk/goad/-/settings/integrations)
+| Account      | Role                     | Group         |
+| ------------ | ------------------------ | ------------- |
+| `SuperAdmin` | Built-in Administrator   | Domain Admins |
+| `Admin1`     | Primary Administrator    | Domain Admins |
+| `Admin2`     | Backup Administrator     | Domain Admins |
+| `User1`      | Standard User            | Domain Users  |
+| `User2`      | Standard User            | Domain Users  |
+| `KRBTGT`     | Kerberos Service Account | —             |
+| `XGuest`     | Guest Account (Disabled) | —             |
 
-## Collaborate with your team
+---
 
-* [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-* [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-* [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-* [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-* [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+# 📸 Infrastructure
 
-## Test and Deploy
+## Windows Server 2019
 
-Use the built-in continuous integration in GitLab.
+![Server IP Configuration](docs/screenshots/01-infrastructure/01-server-ipconfig.png)
 
-* [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
-* [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-* [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-* [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-* [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+## Windows 10 Client
 
-***
+![Client IP Configuration](docs/screenshots/01-infrastructure/02-client-ipconfig.png)
 
-# Editing this README
+## Active Directory Users and Computers
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+![Active Directory Users](docs/screenshots/01-infrastructure/03-ad-users-computers.png)
 
-## Suggestions for a good README
+## DHCP Configuration
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+![DHCP Configuration](docs/screenshots/01-infrastructure/04-dhcp-scope.png)
 
-## Name
-Choose a self-explaining name for your project.
+## DNS Configuration
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+![DNS Configuration](docs/screenshots/01-infrastructure/05-dns-zones.png)
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+## DCDiag Results
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+![DCDiag Results](docs/screenshots/01-infrastructure/06-dcdiag.png)
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+## Domain Join
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+![Domain Join](docs/screenshots/01-infrastructure/07-domain-join.png)
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+## Server Manager
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+![Server Manager](docs/screenshots/01-infrastructure/08-server-manager.png)
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+## Network Shares
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+![Net Share](docs/screenshots/01-infrastructure/09-net-share.png)
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+## Connectivity Tests
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+![Ping Tests](docs/screenshots/01-infrastructure/10-ping-tests.png)
 
-## License
-For open source projects, say how it is licensed.
+---
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+# 🔧 Part 1 — Group Policy Configuration
+
+## Configured Group Policies
+
+| # | GPO                   | Description                      | Status |
+| - | --------------------- | -------------------------------- | ------ |
+| 1 | Default Domain Policy | Password + Account Lockout       | ✅      |
+| 2 | GPO_Block_USB         | Complete USB Restriction         | ✅      |
+| 3 | GPO_Windows_Security  | Windows Security Hardening       | ✅      |
+| 4 | GPO_Defender          | Microsoft Defender Configuration | ✅      |
+| 5 | GPO_Firewall          | Windows Firewall                 | ✅      |
+| 6 | GPO_Windows_Update    | Automatic Updates                | ✅      |
+| 7 | GPO_Software_Deploy   | 7-Zip Deployment                 | ✅      |
+| 8 | GPO_Security_Users    | User Restrictions                | ✅      |
+
+### All Configured GPOs
+
+![All GPOs](docs/screenshots/02-gpo/11-all-gpos-list.png)
+
+---
+
+## 🔐 GPO 1 — Password Policy
+
+![Password Policy](docs/screenshots/02-gpo/12-password-policy.png)
+
+| Setting                 | Configuration |
+| ----------------------- | ------------- |
+| Minimum password length | 10 characters |
+| Password complexity     | Enabled       |
+| Maximum password age    | 60 days       |
+| Minimum password age    | 1 day         |
+| Password history        | 5 passwords   |
+| Reversible encryption   | Disabled      |
+
+---
+
+## 🔒 GPO 2 — Account Lockout Policy
+
+![Account Lockout](docs/screenshots/02-gpo/13-account-lockout.png)
+
+| Setting           | Configuration |
+| ----------------- | ------------- |
+| Lockout threshold | 5 attempts    |
+| Lockout duration  | 15 minutes    |
+| Counter reset     | 15 minutes    |
+
+---
+
+## 🔌 GPO 3 — USB Device Restrictions
+
+![USB Block](docs/screenshots/02-gpo/14-usb-block.png)
+
+* ❌ All Removable Storage — Deny All
+* ❌ USB Read Access — Denied
+* ❌ USB Write Access — Denied
+* ❌ CD/DVD Read Access — Denied
+* ❌ CD/DVD Write Access — Denied
+* ❌ WPD Devices — Denied
+
+---
+
+## 🪟 GPO 4 — Windows Security Hardening
+
+* ❌ Remote Registry disabled
+* ❌ Telnet disabled
+* ❌ Guest account disabled
+* ⚠️ Security warning message enabled
+* 🔒 Last logged-in user hidden
+* 🔒 Shutdown without login disabled
+
+---
+
+## 🛡️ GPO 5 — Microsoft Defender
+
+![Defender](docs/screenshots/02-gpo/15-defender-gpo.png)
+
+* ✅ Real-time protection enabled
+* ✅ Behaviour monitoring enabled
+* ☁️ Cloud protection configured at high level
+* 🔍 Full scheduled scan every Saturday at 02:00
+* 🔄 Security intelligence updates every 8 hours
+* 📥 Download scanning enabled
+
+---
+
+## 🔥 GPO 6 — Windows Firewall
+
+![Firewall](docs/screenshots/02-gpo/16-firewall-gpo.png)
+
+| Profile | Firewall | Inbound | Outbound |
+| ------- | -------- | ------- | -------- |
+| Domain  | ON       | Blocked | Allowed  |
+| Private | ON       | Blocked | Allowed  |
+| Public  | ON       | Blocked | Blocked  |
+
+### Allowed Rules
+
+| Service | Protocol / Port | Scope       |
+| ------- | --------------- | ----------- |
+| RDP     | TCP 3389        | Domain Only |
+| DNS     | UDP 53          | Required    |
+| ICMP    | Ping            | Allowed     |
+
+---
+
+## 🔄 GPO 7 — Windows Update
+
+![Windows Update](docs/screenshots/02-gpo/17-update-gpo.png)
+
+* ✅ Automatic updates enabled
+* 📥 Automatic download and installation
+* 🕒 Scheduled installation: **03:00**
+* 🕗 Active hours: **08:00 – 18:00**
+* 🔄 No forced restart during active hours
+
+---
+
+## 📦 GPO 8 — Software Deployment
+
+![Software Deployment](docs/screenshots/02-gpo/18-software-deploy.png)
+
+| Setting         | Configuration                     |
+| --------------- | --------------------------------- |
+| Software        | 7-Zip 24.07                       |
+| Deployment Type | Assigned                          |
+| Source          | `\\DC01\Software_Deploy\7zip.msi` |
+| Deployment      | Automatic at startup              |
+
+---
+
+## 📊 Applied GPOs on the Client
+
+![GPResult](docs/screenshots/02-gpo/19-gpresult-client.png)
+
+---
+
+# 🩸 Part 2 — BloodHound Analysis
+
+## 🛠️ Tools Used
+
+| Tool          | Version | Purpose                          |
+| ------------- | ------- | -------------------------------- |
+| SharpHound    | v2.14.0 | Active Directory Data Collection |
+| BloodHound CE | v5.x    | Analysis and Visualisation       |
+| Neo4j         | Latest  | Graph Database                   |
+| PostgreSQL    | Latest  | Main Database                    |
+
+---
+
+## 📊 Collection Statistics
+
+| Metric               |     Result |
+| -------------------- | ---------: |
+| Objects Collected    |        315 |
+| Sessions             |          5 |
+| ACEs                 |      1,819 |
+| Relationships        |      2,982 |
+| Group Completeness   |       100% |
+| Session Completeness |       100% |
+| Domain               |  proxym.tn |
+| Collection Duration  | 12 seconds |
+
+---
+
+## SharpHound Data Collection
+
+![SharpHound](docs/screenshots/03-bloodhound/20-sharphound-running.png)
+
+## BloodHound Login
+
+![BloodHound Login](docs/screenshots/03-bloodhound/22-bh-login.png)
+
+## BloodHound Dashboard
+
+![BloodHound Dashboard](docs/screenshots/03-bloodhound/23-bh-dashboard.png)
+
+## Data Quality Statistics
+
+![Data Quality](docs/screenshots/03-bloodhound/24-data-quality.png)
+
+## All Users
+
+![All Users](docs/screenshots/03-bloodhound/25-all-users.png)
+
+## All Computers
+
+![All Computers](docs/screenshots/03-bloodhound/26-all-computers.png)
+
+## Object Count
+
+![Object Count](docs/screenshots/03-bloodhound/27-object-count.png)
+
+### Active Directory Object Statistics
+
+| Object Type   | Count |
+| ------------- | ----: |
+| Computers     |     2 |
+| Users         |     9 |
+| Groups        |    62 |
+| OUs           |     4 |
+| GPOs          |    10 |
+| Sessions      |     5 |
+| ACEs          | 1,819 |
+| Relationships | 2,982 |
+
+---
+
+## Domain Admin Members
+
+![Domain Admin Members](docs/screenshots/03-bloodhound/28-domain-admins-members.png)
+
+## All Relationships
+
+![All Relationships](docs/screenshots/03-bloodhound/29-all-relationships.png)
+
+## DC01 Properties
+
+![DC01 Properties](docs/screenshots/03-bloodhound/30-dc01-properties.png)
+
+## Domain Admin Graph
+
+![Domain Admin Graph](docs/screenshots/03-bloodhound/31-domain-admins-graph.png)
+
+## Attack Path Analysis
+
+![Attack Path](docs/screenshots/03-bloodhound/32-attack-path.png)
+
+---
+
+# 👥 Session Analysis
+
+## Method 1 — Windows Command
+
+```cmd
+query user /server:DESKTOP-A92LHE9
+```
+
+### Active Sessions on Windows 10
+
+| User     | Computer        | Status |
+| -------- | --------------- | ------ |
+| `User1`  | DESKTOP-A92LHE9 | Active |
+| `Admin1` | DESKTOP-A92LHE9 | Active |
+
+### Sessions on DC01
+
+```cmd
+query user /server:DC01
+```
+
+---
+
+## Method 2 — PowerShell
+
+```powershell
+Get-ADUser -Filter * -Properties LastLogonDate |
+Select-Object Name, LastLogonDate, Enabled |
+Sort-Object LastLogonDate -Descending |
+Format-Table -AutoSize
+```
+
+---
+
+## Method 3 — BloodHound / Cypher
+
+```cypher
+MATCH (u:User)-[:HasSession]->(c:Computer)
+RETURN u.name AS User, c.name AS Computer
+```
+
+---
+
+# ⚠️ Security Finding — Privileged Account Session
+
+> **Finding:** `Admin1` was logged into `DESKTOP-A92LHE9`.
+
+| Category               | Details                                                          |
+| ---------------------- | ---------------------------------------------------------------- |
+| 🔴 Risk                | Administrative credentials could potentially be exposed          |
+| ⚠️ Impact              | Increased risk of credential theft                               |
+| ⚠️ Potential Technique | Pass-the-Hash                                                    |
+| ⚠️ Potential Technique | Pass-the-Ticket                                                  |
+| ✅ Recommendation       | Restrict privileged accounts to dedicated administrative systems |
+| 🔐 Additional Control  | Implement Privileged Access Workstations (PAW)                   |
+
+---
+
+# 🔐 Active Directory Security Analysis
+
+## DC01 Security Properties
+
+| Parameter                | Value | Risk Level  |
+| ------------------------ | ----- | ----------- |
+| LDAP Signing             | FALSE | 🔴 CRITICAL |
+| LAPS Enabled             | FALSE | 🔴 HIGH     |
+| Unconstrained Delegation | TRUE  | 🔴 CRITICAL |
+| SMB Signing              | TRUE  | ✅ GOOD      |
+| LDAPS Available          | TRUE  | ✅ GOOD      |
+| AES Encryption           | TRUE  | ✅ GOOD      |
+
+---
+
+## 👑 Domain Admin Members
+
+```text
+SUPERADMIN@PROXYM.TN  → Built-in Administrator
+ADMIN1@PROXYM.TN      → Primary Administrator
+ADMIN2@PROXYM.TN      → Backup Administrator
+```
+
+---
+
+# 🔍 Identified Vulnerabilities
+
+## 🔴 Vulnerability 1 — LDAP Signing Disabled
+
+**Description:** LDAP communications are not configured to require signing.
+
+**Risk:** Potential exposure to man-in-the-middle attacks and modification of LDAP communications.
+
+**Impact:** 🔴 **CRITICAL**
+
+### Recommended Remediation
+
+Configure:
+
+```text
+Default Domain Controllers Policy
+└── Security Settings
+    └── Security Options
+        └── Domain controller: LDAP server signing requirements
+            → Require signing
+```
+
+---
+
+## 🔴 Vulnerability 2 — Unconstrained Delegation Enabled
+
+**Description:** Unconstrained Kerberos Delegation is enabled on the Domain Controller.
+
+**Risk:**
+
+* Kerberos ticket exposure
+* Potential impersonation of authenticated users
+* Increased risk of credential compromise
+
+**Impact:** 🔴 **CRITICAL**
+
+### Recommended Remediation
+
+* Disable unnecessary unconstrained delegation.
+* Use constrained delegation where appropriate.
+* Review delegation settings in Active Directory.
+* Apply the principle of least privilege.
+
+---
+
+## 🔴 Vulnerability 3 — LAPS Not Deployed
+
+**Description:** Local Administrator Password Solution (LAPS) is not deployed.
+
+**Risk:**
+
+* Potential reuse of local administrator credentials.
+* Increased risk of lateral movement.
+* Potential Pass-the-Hash exposure.
+
+**Impact:** 🔴 **HIGH**
+
+### Recommended Remediation
+
+* Deploy Microsoft LAPS.
+* Enable automatic password rotation.
+* Ensure unique local administrator passwords.
+
+---
+
+## 🟡 Vulnerability 4 — Excessive Domain Admin Accounts
+
+**Description:** Three active accounts have Domain Admin privileges.
+
+**Risk:** Increasing the number of privileged accounts expands the attack surface.
+
+**Impact:** 🟡 **MEDIUM**
+
+### Recommended Remediation
+
+* Reduce privileged accounts to the minimum required.
+* Apply a Tier 0 / Tier 1 / Tier 2 administrative model.
+* Consider Just-In-Time (JIT) privileged access.
+
+---
+
+## 🟡 Vulnerability 5 — Administrator Logged Into a Workstation
+
+**Description:** `Admin1` has an active session on `DESKTOP-A92LHE9`.
+
+**Risk:**
+
+* Privileged credential exposure.
+* Potential Pass-the-Hash attacks.
+* Potential Pass-the-Ticket attacks.
+
+**Impact:** 🟡 **MEDIUM**
+
+### Recommended Remediation
+
+* Deploy Privileged Access Workstations (PAW).
+* Restrict privileged accounts to administrative systems.
+* Separate standard user and administrator accounts.
+
+---
+
+# 🛠️ Remediation Plan
+
+## 🔴 High Priority — Immediate
+
+| # | Action                           | Recommendation                            |
+| - | -------------------------------- | ----------------------------------------- |
+| 1 | Enable LDAP Signing              | Configure Domain Controllers GPO          |
+| 2 | Disable Unconstrained Delegation | Review AD delegation settings             |
+| 3 | Deploy Microsoft LAPS            | Configure automatic password rotation     |
+| 4 | Enable LDAP Channel Binding      | Configure according to Microsoft guidance |
+
+---
+
+## 🟡 Medium Priority — Within 1 Month
+
+| # | Action               | Recommendation                         |
+| - | -------------------- | -------------------------------------- |
+| 5 | Reduce Domain Admins | Keep only required privileged accounts |
+| 6 | Implement PAW        | Dedicated administrator workstations   |
+| 7 | Enable MFA           | Protect privileged accounts            |
+| 8 | Implement PAM        | Deploy privileged access management    |
+
+---
+
+## 🟢 Low Priority — Within 3 Months
+
+| #  | Action                    | Recommendation                |
+| -- | ------------------------- | ----------------------------- |
+| 9  | Monthly BloodHound Audits | Automate periodic assessments |
+| 10 | Monitor Event ID 4624     | SIEM or Event Log monitoring  |
+| 11 | User Security Awareness   | Security awareness training   |
+| 12 | Implement JIT Access      | Temporary privileged access   |
+
+---
+
+# 🏆 Conclusion
+
+## Audit Summary
+
+| Category                        | Result       |
+| ------------------------------- | ------------ |
+| Active Directory Infrastructure | ✅ Functional |
+| Security GPOs Configured        | ✅ 8          |
+| Objects Analysed                | ✅ 315        |
+| Active Sessions Identified      | ✅ 2          |
+| ACE Permissions Analysed        | ✅ 1,819      |
+| Critical / High Findings        | 🔴 3         |
+| Medium Findings                 | 🟡 2         |
+| Total Recommendations           | 📋 12        |
+
+---
+
+## 💪 Security Strengths
+
+* ✅ SMB Signing enabled
+* ✅ AES Encryption supported
+* ✅ Strong password policy configured
+* ✅ USB devices restricted
+* ✅ Firewall configured for all profiles
+* ✅ Microsoft Defender enforced through GPO
+* ✅ Automatic Windows Updates configured
+* ✅ Administrative account redundancy
+* ✅ LDAPS available
+
+---
+
+## ⚠️ Areas for Improvement
+
+* ❌ LDAP Signing not required
+* ❌ Microsoft LAPS not deployed
+* ❌ Unconstrained Kerberos Delegation enabled
+* ❌ Multiple Domain Admin accounts
+* ❌ Privileged account logged into a workstation
+
+---
+
+## 📌 General Assessment
+
+The `proxym.tn` Active Directory infrastructure is functional and includes a solid baseline of security controls through Group Policy Objects.
+
+However, the BloodHound analysis identified several important security weaknesses requiring remediation. The highest-priority findings concern LDAP signing, unconstrained Kerberos delegation, and the absence of Microsoft LAPS.
+
+Implementing the proposed remediation plan will significantly reduce the Active Directory attack surface and improve the overall security posture of the environment.
+
+---
+
+# 📚 Project Information
+
+```text
+Project:      Active Directory Security Audit
+Environment:  VMware Laboratory
+Domain:       proxym.tn
+
+Main Tools:
+├── BloodHound CE
+├── SharpHound
+├── Neo4j
+├── PostgreSQL
+└── Kali Linux
+
+Auditor:      Aya NASR
+Supervisor:   Houda Mabrouk
+Date:         27 August 2026
+```
+
+---
+
+<div align="center">
+
+### 🛡️ Active Directory Security Audit — proxym.tn
+
+**BloodHound CE • SharpHound • Active Directory • VMware**
+
+Made for an authorised security audit environment.
+
+</div>
