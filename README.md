@@ -16,6 +16,7 @@
 * [Part 1 — Group Policy Configuration](#-part-1--group-policy-configuration)
 * [Part 2 — BloodHound Analysis](#-part-2--bloodhound-analysis)
 * [Session Analysis](#-session-analysis)
+* [ACL Analysis](#-acl-analysis)
 * [Security Findings](#-security-findings)
 * [Identified Vulnerabilities](#-identified-vulnerabilities)
 * [Remediation Plan](#-remediation-plan)
@@ -104,45 +105,75 @@ proxym.tn
 
 # 📸 Infrastructure
 
-## Windows Server 2019
+## Windows Server 2019 — Network Configuration
 
-![Server IP Configuration](docs/screenshots/01-infrastructure/01-server-ipconfig.png)
+![Windows Server 2019 IP Configuration](docs/screenshots/01-infrastructure/01-server-ipconfig.png)
 
-## Windows 10 Client
+---
 
-![Client IP Configuration](docs/screenshots/01-infrastructure/02-client-ipconfig.png)
+## Windows 10 Client — Network Configuration
+
+![Windows 10 Client IP Configuration](docs/screenshots/01-infrastructure/02-client-ipconfig.png)
+
+---
 
 ## Active Directory Users and Computers
 
-![Active Directory Users](docs/screenshots/01-infrastructure/03-ad-users-computers.png)
+![Active Directory Users and Computers](docs/screenshots/01-infrastructure/03-ad-users-computers.png)
 
-## DHCP Configuration
+---
 
-![DHCP Configuration](docs/screenshots/01-infrastructure/04-dhcp-scope.png)
+## DHCP Scope Configuration
+
+![DHCP Scope Configuration](docs/screenshots/01-infrastructure/04-dhcp-scope.png)
+
+---
+
+## DHCP Reservation
+
+![DHCP Reservation](docs/screenshots/01-infrastructure/05-dhcp-reservation.png)
+
+---
 
 ## DNS Configuration
 
-![DNS Configuration](docs/screenshots/01-infrastructure/05-dns-zones.png)
+![DNS Zones](docs/screenshots/01-infrastructure/06-dns-zones.png)
 
-## DCDiag Results
+---
 
-![DCDiag Results](docs/screenshots/01-infrastructure/06-dcdiag.png)
+## Domain Controller Diagnostics
+
+![DCDiag Results](docs/screenshots/01-infrastructure/07-dcdiag.png)
+
+---
 
 ## Domain Join
 
-![Domain Join](docs/screenshots/01-infrastructure/07-domain-join.png)
+![Windows 10 Domain Join](docs/screenshots/01-infrastructure/08-domain-join.png)
+
+---
 
 ## Server Manager
 
-![Server Manager](docs/screenshots/01-infrastructure/08-server-manager.png)
+![Windows Server Manager](docs/screenshots/01-infrastructure/09-server-manager.png)
+
+---
+
+## Administrative Accounts
+
+![Administrative Accounts](docs/screenshots/01-infrastructure/10-admin-accounts.png)
+
+---
 
 ## Network Shares
 
-![Net Share](docs/screenshots/01-infrastructure/09-net-share.png)
+![Network Shares](docs/screenshots/01-infrastructure/11-net-share.png)
+
+---
 
 ## Connectivity Tests
 
-![Ping Tests](docs/screenshots/01-infrastructure/10-ping-tests.png)
+![Ping Tests](docs/screenshots/01-infrastructure/12-ping-tests.png)
 
 ---
 
@@ -161,15 +192,17 @@ proxym.tn
 | 7 | GPO_Software_Deploy   | 7-Zip Deployment                 | ✅      |
 | 8 | GPO_Security_Users    | User Restrictions                | ✅      |
 
-### All Configured GPOs
+---
 
-![All GPOs](docs/screenshots/02-gpo/11-all-gpos-list.png)
+## All Configured GPOs
+
+![All Configured GPOs](docs/screenshots/02-gpo/13-all-gpos-list.png)
 
 ---
 
-## 🔐 GPO 1 — Password Policy
+## 🔐 Password Policy
 
-![Password Policy](docs/screenshots/02-gpo/12-password-policy.png)
+![Password Policy](docs/screenshots/02-gpo/14-password-policy.png)
 
 | Setting                 | Configuration |
 | ----------------------- | ------------- |
@@ -182,9 +215,9 @@ proxym.tn
 
 ---
 
-## 🔒 GPO 2 — Account Lockout Policy
+## 🔒 Account Lockout Policy
 
-![Account Lockout](docs/screenshots/02-gpo/13-account-lockout.png)
+![Account Lockout Policy](docs/screenshots/02-gpo/15-account-lockout.png)
 
 | Setting           | Configuration |
 | ----------------- | ------------- |
@@ -194,9 +227,9 @@ proxym.tn
 
 ---
 
-## 🔌 GPO 3 — USB Device Restrictions
+## 🔌 USB Device Restrictions
 
-![USB Block](docs/screenshots/02-gpo/14-usb-block.png)
+![USB Block Policy](docs/screenshots/02-gpo/16-usb-block.png)
 
 * ❌ All Removable Storage — Deny All
 * ❌ USB Read Access — Denied
@@ -207,33 +240,40 @@ proxym.tn
 
 ---
 
-## 🪟 GPO 4 — Windows Security Hardening
+## 🛡️ Microsoft Defender Configuration
 
-* ❌ Remote Registry disabled
-* ❌ Telnet disabled
-* ❌ Guest account disabled
-* ⚠️ Security warning message enabled
-* 🔒 Last logged-in user hidden
-* 🔒 Shutdown without login disabled
+> Multiple screenshots were captured for this configuration.
 
----
+### Microsoft Defender — Configuration 1
 
-## 🛡️ GPO 5 — Microsoft Defender
+![Microsoft Defender Configuration 1](docs/screenshots/02-gpo/17-defender-gpo'.png)
 
-![Defender](docs/screenshots/02-gpo/15-defender-gpo.png)
+### Microsoft Defender — Configuration 2
+
+![Microsoft Defender Configuration 2](docs/screenshots/02-gpo/17-defender-gpo''.png)
+
+### Microsoft Defender — Configuration 3
+
+![Microsoft Defender Configuration 3](docs/screenshots/02-gpo/17-defender-gpo'''.png)
+
+### Microsoft Defender — Configuration 4
+
+![Microsoft Defender Configuration 4](docs/screenshots/02-gpo/17-defender-gpo''''.png)
+
+### Security Settings
 
 * ✅ Real-time protection enabled
 * ✅ Behaviour monitoring enabled
-* ☁️ Cloud protection configured at high level
-* 🔍 Full scheduled scan every Saturday at 02:00
-* 🔄 Security intelligence updates every 8 hours
+* ☁️ Cloud protection configured
+* 🔍 Scheduled scans configured
+* 🔄 Security intelligence updates configured
 * 📥 Download scanning enabled
 
 ---
 
-## 🔥 GPO 6 — Windows Firewall
+## 🔥 Windows Firewall
 
-![Firewall](docs/screenshots/02-gpo/16-firewall-gpo.png)
+![Windows Firewall GPO](docs/screenshots/02-gpo/18-firewall-gpo.png)
 
 | Profile | Firewall | Inbound | Outbound |
 | ------- | -------- | ------- | -------- |
@@ -251,25 +291,25 @@ proxym.tn
 
 ---
 
-## 🔄 GPO 7 — Windows Update
+## 🔄 Windows Update Configuration
 
-![Windows Update](docs/screenshots/02-gpo/17-update-gpo.png)
+![Windows Update GPO](docs/screenshots/02-gpo/19-update-gpo.png)
 
 * ✅ Automatic updates enabled
 * 📥 Automatic download and installation
-* 🕒 Scheduled installation: **03:00**
-* 🕗 Active hours: **08:00 – 18:00**
-* 🔄 No forced restart during active hours
+* 🕒 Scheduled installation configured
+* 🕗 Active hours configured
+* 🔄 Restart behaviour configured
 
 ---
 
-## 📦 GPO 8 — Software Deployment
+## 📦 Software Deployment
 
-![Software Deployment](docs/screenshots/02-gpo/18-software-deploy.png)
+![Software Deployment](docs/screenshots/02-gpo/20-software-deploy.png)
 
 | Setting         | Configuration                     |
 | --------------- | --------------------------------- |
-| Software        | 7-Zip 24.07                       |
+| Software        | 7-Zip                             |
 | Deployment Type | Assigned                          |
 | Source          | `\\DC01\Software_Deploy\7zip.msi` |
 | Deployment      | Automatic at startup              |
@@ -278,7 +318,25 @@ proxym.tn
 
 ## 📊 Applied GPOs on the Client
 
-![GPResult](docs/screenshots/02-gpo/19-gpresult-client.png)
+### GPResult
+
+![GPResult Client](docs/screenshots/02-gpo/21-gpresult-client.png)
+
+### Additional GPResult Evidence
+
+![GPResult Client Additional](docs/screenshots/02-gpo/21-gpresult-client''.png)
+
+---
+
+## 📄 GPO HTML Report
+
+![GPO HTML Report](docs/screenshots/02-gpo/22-gpo-html-report.png)
+
+---
+
+## 👤 Security Users GPO
+
+![Security Users GPO](docs/screenshots/02-gpo/23-security-users-gpo.png)
 
 ---
 
@@ -310,33 +368,55 @@ proxym.tn
 
 ---
 
-## SharpHound Data Collection
-
-![SharpHound](docs/screenshots/03-bloodhound/20-sharphound-running.png)
-
 ## BloodHound Login
 
-![BloodHound Login](docs/screenshots/03-bloodhound/22-bh-login.png)
+![BloodHound Login](docs/screenshots/03-bloodhound/26-bh-login.png)
+
+---
 
 ## BloodHound Dashboard
 
-![BloodHound Dashboard](docs/screenshots/03-bloodhound/23-bh-dashboard.png)
+![BloodHound Dashboard](docs/screenshots/03-bloodhound/27-bh-dashboard.png)
 
-## Data Quality Statistics
+---
 
-![Data Quality](docs/screenshots/03-bloodhound/24-data-quality.png)
+## Data Quality
 
-## All Users
+![BloodHound Data Quality](docs/screenshots/03-bloodhound/28-data-quality.png)
 
-![All Users](docs/screenshots/03-bloodhound/25-all-users.png)
+---
 
-## All Computers
+## All Active Directory Users
 
-![All Computers](docs/screenshots/03-bloodhound/26-all-computers.png)
+![All Active Directory Users](docs/screenshots/03-bloodhound/29-all-users.png)
+
+---
+
+## All Active Directory Computers
+
+![All Active Directory Computers](docs/screenshots/03-bloodhound/30-all-computers.png)
+
+---
+
+## All Active Directory Groups
+
+### Group Analysis 1
+
+![All Active Directory Groups 1](docs/screenshots/03-bloodhound/31-all-groups'.png)
+
+### Group Analysis 2
+
+![All Active Directory Groups 2](docs/screenshots/03-bloodhound/31-all-groups''.png)
+
+### Group Analysis 3
+
+![All Active Directory Groups 3](docs/screenshots/03-bloodhound/31-all-groups'''.png)
+
+---
 
 ## Object Count
 
-![Object Count](docs/screenshots/03-bloodhound/27-object-count.png)
+![BloodHound Object Count](docs/screenshots/03-bloodhound/32-object-count.png)
 
 ### Active Directory Object Statistics
 
@@ -355,72 +435,157 @@ proxym.tn
 
 ## Domain Admin Members
 
-![Domain Admin Members](docs/screenshots/03-bloodhound/28-domain-admins-members.png)
+![Domain Admin Members](docs/screenshots/03-bloodhound/33-domain-admins-members.png)
+
+---
 
 ## All Relationships
 
-![All Relationships](docs/screenshots/03-bloodhound/29-all-relationships.png)
+### Relationship Analysis 1
+
+![All Relationships 1](docs/screenshots/03-bloodhound/34-all-relationships'.png)
+
+### Relationship Analysis 2
+
+![All Relationships 2](docs/screenshots/03-bloodhound/34-all-relationships''.png)
+
+---
+
+## Administrative Sessions
+
+![Administrative Sessions](docs/screenshots/03-bloodhound/38-admin-sessions.png)
+
+---
+
+## Group Memberships
+
+![Group Memberships](docs/screenshots/03-bloodhound/39-group-memberships.png)
+
+---
+
+## All Group Policy Objects
+
+![All Group Policy Objects](docs/screenshots/03-bloodhound/40-all-gpos.png)
+
+---
+
+## All Organizational Units
+
+![All Organizational Units](docs/screenshots/03-bloodhound/41-all-ous.png)
+
+---
+
+## High Value Targets
+
+![High Value Targets](docs/screenshots/03-bloodhound/42-high-value-targets.png)
+
+---
+
+## Attack Path
+
+![Attack Path](docs/screenshots/03-bloodhound/43-attack-path.png)
+
+---
 
 ## DC01 Properties
 
-![DC01 Properties](docs/screenshots/03-bloodhound/30-dc01-properties.png)
+![DC01 Properties](docs/screenshots/03-bloodhound/44-dc01-properties.png)
+
+---
 
 ## Domain Admin Graph
 
-![Domain Admin Graph](docs/screenshots/03-bloodhound/31-domain-admins-graph.png)
+![Domain Admin Graph](docs/screenshots/03-bloodhound/45-domain-admins-graph.png)
 
-## Attack Path Analysis
+---
 
-![Attack Path](docs/screenshots/03-bloodhound/32-attack-path.png)
+## Attack Path Graph
+
+![Attack Path Graph](docs/screenshots/03-bloodhound/46-attack-path-graph.png)
+
+---
+
+## DC01 Inbound Control
+
+![DC01 Inbound Control](docs/screenshots/03-bloodhound/49-dc01-inbound-control.png)
 
 ---
 
 # 👥 Session Analysis
 
-## Method 1 — Windows Command
+## Windows 10 Desktop Sessions
 
-```cmd
-query user /server:DESKTOP-A92LHE9
-```
-
-### Active Sessions on Windows 10
-
-| User     | Computer        | Status |
-| -------- | --------------- | ------ |
-| `User1`  | DESKTOP-A92LHE9 | Active |
-| `Admin1` | DESKTOP-A92LHE9 | Active |
-
-### Sessions on DC01
-
-```cmd
-query user /server:DC01
-```
+![Desktop Sessions](docs/screenshots/04-sessions/47-desktop-sessions.png)
 
 ---
 
-## Method 2 — PowerShell
+## Active Sessions on Windows 10
 
-```powershell
-Get-ADUser -Filter * -Properties LastLogonDate |
-Select-Object Name, LastLogonDate, Enabled |
-Sort-Object LastLogonDate -Descending |
-Format-Table -AutoSize
-```
+![Active Sessions Windows 10](docs/screenshots/04-sessions/50-active-sessions-win10.png)
 
 ---
 
-## Method 3 — BloodHound / Cypher
+## Active Sessions on DC01
 
-```cypher
-MATCH (u:User)-[:HasSession]->(c:Computer)
-RETURN u.name AS User, c.name AS Computer
-```
+![Active Sessions DC01](docs/screenshots/04-sessions/51-active-sessions-dc01.png)
 
 ---
 
-# ⚠️ Security Finding — Privileged Account Session
+## Last Logon Analysis
 
-> **Finding:** `Admin1` was logged into `DESKTOP-A92LHE9`.
+![Last Logon Analysis](docs/screenshots/04-sessions/52-last-logon.png)
+
+---
+
+## Logon Events
+
+![Windows Logon Events](docs/screenshots/04-sessions/53-logon-events.png)
+
+---
+
+# 🔐 ACL Analysis
+
+## Dangerous ACLs
+
+![Dangerous ACLs](docs/screenshots/05-acl/35-dangerous-acls.png)
+
+---
+
+## DCSync Rights
+
+![DCSync Rights](docs/screenshots/05-acl/36-dcsync-rights.png)
+
+---
+
+## Admin2 Group Memberships
+
+![Admin2 Group Memberships](docs/screenshots/05-acl/44-admin2-memberships.png)
+
+---
+
+## User1 Group Memberships
+
+![User1 Group Memberships](docs/screenshots/05-acl/45-user1-memberships.png)
+
+---
+
+## Group Membership Analysis
+
+![Group Membership Analysis](docs/screenshots/05-acl/46-group-memberships.png)
+
+---
+
+## Admin1 Properties
+
+![Admin1 Properties](docs/screenshots/05-acl/48-admin1-properties.png)
+
+---
+
+# ⚠️ Security Findings
+
+## Privileged Account Session
+
+> **Finding:** A privileged account was identified with a session on a workstation.
 
 | Category               | Details                                                          |
 | ---------------------- | ---------------------------------------------------------------- |
@@ -433,34 +598,9 @@ RETURN u.name AS User, c.name AS Computer
 
 ---
 
-# 🔐 Active Directory Security Analysis
-
-## DC01 Security Properties
-
-| Parameter                | Value | Risk Level  |
-| ------------------------ | ----- | ----------- |
-| LDAP Signing             | FALSE | 🔴 CRITICAL |
-| LAPS Enabled             | FALSE | 🔴 HIGH     |
-| Unconstrained Delegation | TRUE  | 🔴 CRITICAL |
-| SMB Signing              | TRUE  | ✅ GOOD      |
-| LDAPS Available          | TRUE  | ✅ GOOD      |
-| AES Encryption           | TRUE  | ✅ GOOD      |
-
----
-
-## 👑 Domain Admin Members
-
-```text
-SUPERADMIN@PROXYM.TN  → Built-in Administrator
-ADMIN1@PROXYM.TN      → Primary Administrator
-ADMIN2@PROXYM.TN      → Backup Administrator
-```
-
----
-
 # 🔍 Identified Vulnerabilities
 
-## 🔴 Vulnerability 1 — LDAP Signing Disabled
+## 🔴 LDAP Signing Disabled
 
 **Description:** LDAP communications are not configured to require signing.
 
@@ -468,25 +608,13 @@ ADMIN2@PROXYM.TN      → Backup Administrator
 
 **Impact:** 🔴 **CRITICAL**
 
-### Recommended Remediation
-
-Configure:
-
-```text
-Default Domain Controllers Policy
-└── Security Settings
-    └── Security Options
-        └── Domain controller: LDAP server signing requirements
-            → Require signing
-```
-
 ---
 
-## 🔴 Vulnerability 2 — Unconstrained Delegation Enabled
+## 🔴 Unconstrained Delegation Enabled
 
-**Description:** Unconstrained Kerberos Delegation is enabled on the Domain Controller.
+**Description:** Unconstrained Kerberos delegation was identified in the environment.
 
-**Risk:**
+**Potential Risks:**
 
 * Kerberos ticket exposure
 * Potential impersonation of authenticated users
@@ -494,103 +622,78 @@ Default Domain Controllers Policy
 
 **Impact:** 🔴 **CRITICAL**
 
-### Recommended Remediation
-
-* Disable unnecessary unconstrained delegation.
-* Use constrained delegation where appropriate.
-* Review delegation settings in Active Directory.
-* Apply the principle of least privilege.
-
 ---
 
-## 🔴 Vulnerability 3 — LAPS Not Deployed
+## 🔴 LAPS Not Deployed
 
-**Description:** Local Administrator Password Solution (LAPS) is not deployed.
+**Description:** Local Administrator Password Solution (LAPS) was not identified as deployed.
 
-**Risk:**
+**Potential Risks:**
 
-* Potential reuse of local administrator credentials.
-* Increased risk of lateral movement.
-* Potential Pass-the-Hash exposure.
+* Local administrator password reuse
+* Increased risk of lateral movement
+* Potential Pass-the-Hash exposure
 
 **Impact:** 🔴 **HIGH**
 
-### Recommended Remediation
-
-* Deploy Microsoft LAPS.
-* Enable automatic password rotation.
-* Ensure unique local administrator passwords.
-
 ---
 
-## 🟡 Vulnerability 4 — Excessive Domain Admin Accounts
+## 🟡 Multiple Privileged Accounts
 
-**Description:** Three active accounts have Domain Admin privileges.
+**Description:** Multiple accounts have privileged Domain Admin permissions.
 
 **Risk:** Increasing the number of privileged accounts expands the attack surface.
 
 **Impact:** 🟡 **MEDIUM**
 
-### Recommended Remediation
-
-* Reduce privileged accounts to the minimum required.
-* Apply a Tier 0 / Tier 1 / Tier 2 administrative model.
-* Consider Just-In-Time (JIT) privileged access.
-
 ---
 
-## 🟡 Vulnerability 5 — Administrator Logged Into a Workstation
+## 🟡 Privileged Account on Workstation
 
-**Description:** `Admin1` has an active session on `DESKTOP-A92LHE9`.
+**Description:** A privileged account session was identified on a workstation.
 
 **Risk:**
 
-* Privileged credential exposure.
-* Potential Pass-the-Hash attacks.
-* Potential Pass-the-Ticket attacks.
+* Privileged credential exposure
+* Potential Pass-the-Hash attacks
+* Potential Pass-the-Ticket attacks
 
 **Impact:** 🟡 **MEDIUM**
-
-### Recommended Remediation
-
-* Deploy Privileged Access Workstations (PAW).
-* Restrict privileged accounts to administrative systems.
-* Separate standard user and administrator accounts.
 
 ---
 
 # 🛠️ Remediation Plan
 
-## 🔴 High Priority — Immediate
+## 🔴 High Priority
 
-| # | Action                           | Recommendation                            |
-| - | -------------------------------- | ----------------------------------------- |
-| 1 | Enable LDAP Signing              | Configure Domain Controllers GPO          |
-| 2 | Disable Unconstrained Delegation | Review AD delegation settings             |
-| 3 | Deploy Microsoft LAPS            | Configure automatic password rotation     |
-| 4 | Enable LDAP Channel Binding      | Configure according to Microsoft guidance |
+| # | Action                      | Recommendation                               |
+| - | --------------------------- | -------------------------------------------- |
+| 1 | Enable LDAP Signing         | Configure Domain Controllers GPO             |
+| 2 | Review Delegation           | Disable unnecessary unconstrained delegation |
+| 3 | Deploy Microsoft LAPS       | Configure automatic password rotation        |
+| 4 | Enable LDAP Channel Binding | Configure according to Microsoft guidance    |
 
 ---
 
-## 🟡 Medium Priority — Within 1 Month
+## 🟡 Medium Priority
 
 | # | Action               | Recommendation                         |
 | - | -------------------- | -------------------------------------- |
-| 5 | Reduce Domain Admins | Keep only required privileged accounts |
+| 5 | Review Domain Admins | Keep only required privileged accounts |
 | 6 | Implement PAW        | Dedicated administrator workstations   |
 | 7 | Enable MFA           | Protect privileged accounts            |
-| 8 | Implement PAM        | Deploy privileged access management    |
+| 8 | Implement PAM        | Privileged access management           |
 
 ---
 
-## 🟢 Low Priority — Within 3 Months
+## 🟢 Long-Term Improvements
 
-| #  | Action                    | Recommendation                |
-| -- | ------------------------- | ----------------------------- |
-| 9  | Monthly BloodHound Audits | Automate periodic assessments |
-| 10 | Monitor Event ID 4624     | SIEM or Event Log monitoring  |
-| 11 | User Security Awareness   | Security awareness training   |
-| 12 | Implement JIT Access      | Temporary privileged access   |
+| #  | Action                | Recommendation                 |
+| -- | --------------------- | ------------------------------ |
+| 9  | BloodHound Audits     | Perform periodic assessments   |
+| 10 | Monitor Event ID 4624 | SIEM or Event Log monitoring   |
+| 11 | Security Awareness    | Train users and administrators |
+| 12 | Implement JIT Access  | Temporary privileged access    |
 
 ---
 
@@ -603,11 +706,9 @@ Default Domain Controllers Policy
 | Active Directory Infrastructure | ✅ Functional |
 | Security GPOs Configured        | ✅ 8          |
 | Objects Analysed                | ✅ 315        |
-| Active Sessions Identified      | ✅ 2          |
+| Sessions Analysed               | ✅ 5          |
 | ACE Permissions Analysed        | ✅ 1,819      |
-| Critical / High Findings        | 🔴 3         |
-| Medium Findings                 | 🟡 2         |
-| Total Recommendations           | 📋 12        |
+| Relationships Analysed          | ✅ 2,982      |
 
 ---
 
@@ -617,61 +718,79 @@ Default Domain Controllers Policy
 * ✅ AES Encryption supported
 * ✅ Strong password policy configured
 * ✅ USB devices restricted
-* ✅ Firewall configured for all profiles
-* ✅ Microsoft Defender enforced through GPO
-* ✅ Automatic Windows Updates configured
-* ✅ Administrative account redundancy
-* ✅ LDAPS available
+* ✅ Firewall configured
+* ✅ Microsoft Defender configured through GPO
+* ✅ Windows Updates configured
+* ✅ DNS and DHCP infrastructure configured
+* ✅ Active Directory environment successfully deployed
 
 ---
 
 ## ⚠️ Areas for Improvement
 
-* ❌ LDAP Signing not required
-* ❌ Microsoft LAPS not deployed
-* ❌ Unconstrained Kerberos Delegation enabled
-* ❌ Multiple Domain Admin accounts
-* ❌ Privileged account logged into a workstation
+* ❌ LDAP Signing configuration requires review
+* ❌ Microsoft LAPS deployment should be considered
+* ❌ Kerberos delegation configuration requires review
+* ❌ Privileged account exposure should be reduced
+* ❌ Administrative sessions should be restricted to dedicated systems
 
 ---
 
 ## 📌 General Assessment
 
-The `proxym.tn` Active Directory infrastructure is functional and includes a solid baseline of security controls through Group Policy Objects.
+The `proxym.tn` Active Directory environment is functional and includes multiple security controls implemented through Group Policy Objects.
 
-However, the BloodHound analysis identified several important security weaknesses requiring remediation. The highest-priority findings concern LDAP signing, unconstrained Kerberos delegation, and the absence of Microsoft LAPS.
+The BloodHound analysis provided visibility into users, computers, groups, sessions, ACLs, privileged relationships, and potential attack paths within the Active Directory environment.
 
-Implementing the proposed remediation plan will significantly reduce the Active Directory attack surface and improve the overall security posture of the environment.
+The identified findings should be validated and prioritised according to the organisation's operational requirements and risk management process. Implementing the proposed remediation plan will help reduce the Active Directory attack surface and improve the overall security posture of the environment.
 
 ---
 
-# 📚 Project Information
+# 📁 Repository Structure
 
 ```text
-Project:      Active Directory Security Audit
-Environment:  VMware Laboratory
-Domain:       proxym.tn
-
-Main Tools:
-├── BloodHound CE
-├── SharpHound
-├── Neo4j
-├── PostgreSQL
-└── Kali Linux
-
-Auditor:      Aya NASR
-Supervisor:   Houda Mabrouk
-Date:         27 August 2026
+goad/
+│
+├── README.md
+│
+└── docs/
+    └── screenshots/
+        │
+        ├── 01-infrastructure/
+        │   ├── 01-server-ipconfig.png
+        │   ├── 02-client-ipconfig.png
+        │   ├── 03-ad-users-computers.png
+        │   ├── 04-dhcp-scope.png
+        │   ├── 05-dhcp-reservation.png
+        │   ├── 06-dns-zones.png
+        │   ├── 07-dcdiag.png
+        │   ├── 08-domain-join.png
+        │   ├── 09-server-manager.png
+        │   ├── 10-admin-accounts.png
+        │   ├── 11-net-share.png
+        │   └── 12-ping-tests.png
+        │
+        ├── 02-gpo/
+        │
+        ├── 03-bloodhound/
+        │
+        ├── 04-sessions/
+        │
+        └── 05-acl/
 ```
 
 ---
 
 <div align="center">
 
-### 🛡️ Active Directory Security Audit — proxym.tn
+## 🛡️ Active Directory Security Audit
 
-**BloodHound CE • SharpHound • Active Directory • VMware**
+**proxym.tn**
 
-Made for an authorised security audit environment.
+BloodHound CE • SharpHound • Active Directory • VMware
+
+**Auditor:** Aya NASR
+**Supervisor:** Houda Mabrouk
+**Date:** 27 August 2026
 
 </div>
